@@ -7,19 +7,17 @@ language: java
 cache:
   directories:
     - ~/.m2
-
-addons:
-  apt:
-    packages:
-      - groovy
-      - xsltproc
-      - xmlstarlet
+    - ~/.ivy2
 
 branches:
   only:
     - master
 
+before_install:
+  - sudo apt update
+
 install:
+  - sudo apt install -y groovy xsltproc xmlstarlet ant
   - ./.ci/travis.sh install-adoptium-jdk
   - ./.ci/travis.sh install-custom-mvn
 
@@ -37,25 +35,6 @@ jobs:
         - DEPLOY="true"
         - USE_MAVEN_REPO="true"
 
-    # codecov
-    - jdk: openjdk11
-      env:
-        - DESC="codecov"
-        - USE_MAVEN_REPO="true"
-        - CMD="./.ci/travis.sh jacoco"
-
-    - jdk: openjdk11
-      env:
-        - DESC="codenarc analysis"
-        - CMD="./.ci/codenarc.sh"
-
-    # Ensure that all modules are used in no exception configs
-    - env:
-        - DESC="ensure that all modules are used in no exception configs"
-        - CMD1="export PULL_REQUEST=$TRAVIS_PULL_REQUEST"
-        - CMD2="./.ci/validation.sh verify-no-exception-configs"
-        - CMD="$CMD1 && $CMD2"
-
 before_script:
   - |
     if [[ $TRAVIS_CPU_ARCH == 'ppc64le' ]]; then
@@ -67,13 +46,13 @@ before_script:
 script:
   # manually set JAVA_HOME to overcome issue with travis ci noted at
   # https://github.com/checkstyle/checkstyle/pull/11699#issue-1261272652
-#  - JAVA_HOME='/usr/lib/jvm/adoptopenjdk-11-hotspot-ppc64el'
+  # - JAVA_HOME='/usr/lib/jvm/adoptopenjdk-11-hotspot-ppc64el'
   - ./.ci/travis.sh init-m2-repo
   - ./.ci/travis.sh run-command "$CMD"
-#  - ./.ci/travis.sh remove-custom-mvn
-#  - ./.ci/travis.sh remove-adoptium-jdk
+  # - ./.ci/travis.sh remove-custom-mvn
+  # - ./.ci/travis.sh remove-adoptium-jdk
   - ./.ci/validation.sh git-diff
-  - ./.ci/travis.sh ci-temp-check
+  - ./.ci/validation.sh ci-temp-check
   - ./.ci/travis.sh quarterly-cache-cleanup
   - sleep 5s
 

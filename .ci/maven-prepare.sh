@@ -2,17 +2,18 @@
 
 set -e
 
+source ./.ci/util.sh
+
 if [[ -z $1 ]]; then
   echo "version is not set"
-  echo "Usage: maven-prepare.sh <version>"
+  echo "Usage: $BASH_SOURCE <version>"
   exit 1
 fi
 
 TARGET_VERSION=$1
 echo TARGET_VERSION="$TARGET_VERSION"
 
-CURRENT_VERSION=$(xmlstarlet sel -N pom=http://maven.apache.org/POM/4.0.0 \
-                             -t -m pom:project -v pom:version pom.xml | sed "s/-SNAPSHOT//")
+CURRENT_VERSION=$(getCheckstylePomVersionWithoutSnapshot)
 echo CURRENT_VERSION="$CURRENT_VERSION"
 
 if [ "$TARGET_VERSION" != "$CURRENT_VERSION" ]; then
@@ -28,8 +29,8 @@ fi
 
 SKIP_TEST="-DskipTests -DskipITs"
 SKIP_CHECKSTYLE="-Dcheckstyle.ant.skip=true -Dcheckstyle.skip=true"
-SKIP_OTHERS="-Dpmd.skip=true -Dspotbugs.skip=true -Djacoco.skip=true -Dxml.skip=true"
+SKIP_OTHERS="-Dpmd.skip=true -Dspotbugs.skip=true -Djacoco.skip=true -Dxml.skip=true -Dgpg.skip"
 
 echo "Version bump in pom.xml (release:prepare) ..."
-mvn -e --no-transfer-progress release:prepare -B \
+mvn -e --no-transfer-progress release:prepare -B -DpushChanges=false \
     -Darguments="$SKIP_TEST $SKIP_CHECKSTYLE $SKIP_OTHERS"

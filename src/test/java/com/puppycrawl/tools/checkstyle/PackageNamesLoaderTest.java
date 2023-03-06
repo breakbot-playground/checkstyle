@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code and other text files for adherence to a set of rules.
-// Copyright (C) 2001-2022 the original author or authors.
+// Copyright (C) 2001-2023 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -256,7 +256,7 @@ public class PackageNamesLoaderTest extends AbstractPathTestSupport {
      * @noinspectionreason CustomClassloader - needed to throw an exception to
      *      test a catch statement
      */
-    private static class TestIoExceptionClassLoader extends ClassLoader {
+    private static final class TestIoExceptionClassLoader extends ClassLoader {
         @Override
         public Enumeration<URL> getResources(String name) throws IOException {
             throw new IOException("test");

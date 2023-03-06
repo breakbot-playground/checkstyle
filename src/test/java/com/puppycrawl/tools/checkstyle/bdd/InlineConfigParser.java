@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code and other text files for adherence to a set of rules.
-// Copyright (C) 2001-2022 the original author or authors.
+// Copyright (C) 2001-2023 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -110,9 +110,7 @@ public final class InlineConfigParser {
             "com.puppycrawl.tools.checkstyle.checks.modifier.ModifierOrderCheck",
             "com.puppycrawl.tools.checkstyle.checks.annotation.MissingDeprecatedCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck",
-            "com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocPackageCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.WriteTagCheck",
-            "com.puppycrawl.tools.checkstyle.checks.imports.ImportOrderCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.SummaryJavadocCheck",
             "com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck",
             "com.puppycrawl.tools.checkstyle.checks.coding.VariableDeclarationUsageDistanceCheck"));

@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code and other text files for adherence to a set of rules.
-// Copyright (C) 2001-2022 the original author or authors.
+// Copyright (C) 2001-2023 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -242,18 +242,15 @@ public class SuppressWarningsCheck extends AbstractCheck {
                             case TokenTypes.QUESTION:
                                 walkConditional(fChild);
                                 break;
-                            // param in constant case
-                            // ex: public static final String UNCHECKED = "unchecked";
-                            // @SuppressWarnings(UNCHECKED)
-                            // or
-                            // @SuppressWarnings(SomeClass.UNCHECKED)
-                            case TokenTypes.IDENT:
-                            case TokenTypes.DOT:
-                                break;
                             default:
                                 // Known limitation: cases like @SuppressWarnings("un" + "used") or
                                 // @SuppressWarnings((String) "unused") are not properly supported,
                                 // but they should not cause exceptions.
+                                // Also constant as param
+                                // ex: public static final String UNCHECKED = "unchecked";
+                                // @SuppressWarnings(UNCHECKED)
+                                // or
+                                // @SuppressWarnings(SomeClass.UNCHECKED)
                         }
                     }
                     warning = warning.getNextSibling();

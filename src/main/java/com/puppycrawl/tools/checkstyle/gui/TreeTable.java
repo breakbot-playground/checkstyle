@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code and other text files for adherence to a set of rules.
-// Copyright (C) 2001-2022 the original author or authors.
+// Copyright (C) 2001-2023 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -45,7 +45,7 @@ import javax.swing.tree.TreePath;
 
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.utils.XpathUtil;
-import com.puppycrawl.tools.checkstyle.xpath.AbstractNode;
+import com.puppycrawl.tools.checkstyle.xpath.ElementNode;
 import com.puppycrawl.tools.checkstyle.xpath.RootNode;
 import com.puppycrawl.tools.checkstyle.xpath.XpathQueryGenerator;
 import net.sf.saxon.trans.XPathException;
@@ -212,8 +212,8 @@ public final class TreeTable extends JTable {
                 final Deque<DetailAST> nodes =
                         XpathUtil.getXpathItems(xpath, new RootNode(rootAST))
                               .stream()
-                              .map(AbstractNode.class::cast)
-                              .map(AbstractNode::getUnderlyingNode)
+                              .map(ElementNode.class::cast)
+                              .map(ElementNode::getUnderlyingNode)
                               .collect(Collectors.toCollection(ArrayDeque::new));
                 updateTreeTable(xpath, nodes);
             }
@@ -359,7 +359,7 @@ public final class TreeTable extends JTable {
      * TreeTableCellEditor implementation. Component returned is the
      * JTree.
      */
-    private class TreeTableCellEditor extends BaseCellEditor implements
+    private final class TreeTableCellEditor extends BaseCellEditor implements
             TableCellEditor {
 
         @Override

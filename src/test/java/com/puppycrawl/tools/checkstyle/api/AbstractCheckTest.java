@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code and other text files for adherence to a set of rules.
-// Copyright (C) 2001-2022 the original author or authors.
+// Copyright (C) 2001-2023 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.junit.jupiter.api.Test;
@@ -397,7 +398,8 @@ public class AbstractCheckTest extends AbstractModuleTestSupport {
     @Test
     public void testTokensAreUnmodifiable() {
         final DummyAbstractCheck check = new DummyAbstractCheck();
-        assertThrows(UnsupportedOperationException.class, () -> check.getTokenNames().add(""));
+        final Set<String> tokenNameSet = check.getTokenNames();
+        assertThrows(UnsupportedOperationException.class, () -> tokenNameSet.add(""));
     }
 
     public static final class DummyAbstractCheck extends AbstractCheck {

@@ -22,7 +22,7 @@ case $1 in
 all-sevntu-checks)
   working_dir=.ci-temp/all-sevntu-checks
   mkdir -p $working_dir
-  xmlstarlet sel --net --template -m .//module -v "@name" -n config/checkstyle_sevntu_checks.xml \
+  xmlstarlet sel --net --template -m .//module -v "@name" -n config/checkstyle-sevntu-checks.xml \
     | grep -vE "Checker|TreeWalker|Filter|Holder" | grep -v "^$" \
     | sed "s/com\.github\.sevntu\.checkstyle\.checks\..*\.//" \
     | sort | uniq | sed "s/Check$//" > $working_dir/file.txt
@@ -42,7 +42,7 @@ check-missing-pitests)
 
   list=($(cat pom.xml | \
     xmlstarlet sel --ps -N pom="http://maven.apache.org/POM/4.0.0" \
-    -t -v '//pom:profile[./pom:id[contains(text(),'pitest')]]//pom:targetClasses/pom:param'))
+    -t -v "//pom:profile[./pom:id[contains(text(),'pitest')]]//pom:targetClasses/pom:param"))
 
   #  Temporary skip for Metadata generator related files for
   #  https://github.com/checkstyle/checkstyle/issues/8761
@@ -338,7 +338,7 @@ verify-no-exception-configs)
     | grep -vE $MODULES_WITH_EXTERNAL_FILES | grep -v "^$" >> $working_dir/temp.txt
   sort $working_dir/temp.txt | uniq | sed "s/Check$//" > $working_dir/web.txt
 
-  xmlstarlet fo -D -n config/checkstyle_checks.xml \
+  xmlstarlet fo -D -n config/checkstyle-checks.xml \
     | xmlstarlet sel --net --template -m .//module -n -v "@name" \
     | grep -vE $MODULES_WITH_EXTERNAL_FILES | grep -v "^$" \
     | sort | uniq | sed "s/Check$//" > $working_dir/file.txt
@@ -351,7 +351,7 @@ verify-no-exception-configs)
     if [[ $PULL_REQUEST =~ ^([0-9]+)$ ]]; then
       LINK_PR=https://api.github.com/repos/checkstyle/checkstyle/pulls/$PULL_REQUEST
       REGEXP="https://github.com/checkstyle/contribution/pull/"
-      PR_DESC=$(curl --fail-with-body -s -H "Authorization: token $READ_ONLY_TOKEN" "$LINK_PR" \
+      PR_DESC=$(curl -s -H "Authorization: token $READ_ONLY_TOKEN" "$LINK_PR" \
                   | jq '.body' | grep $REGEXP | cat )
       echo 'PR Description grepped:'"${PR_DESC:0:180}"
       if [[ -z $PR_DESC ]]; then
@@ -367,7 +367,7 @@ verify-no-exception-configs)
       fi
     else
       diff -u $working_dir/web.txt $working_dir/file.txt | cat
-      echo 'file config/checkstyle_checks.xml contains Check that is not present at:'
+      echo 'file config/checkstyle-checks.xml contains Check that is not present at:'
       echo 'https://github.com/checkstyle/contribution/blob/master/checkstyle-tester/checks-nonjavadoc-error.xml'
       echo 'https://github.com/checkstyle/contribution/blob/master/checkstyle-tester/checks-only-javadoc-error.xml'
       echo 'Please add new Check to one of such files to let Check participate in auto testing'
@@ -436,7 +436,7 @@ release-dry-run)
   ;;
 
 assembly-run-all-jar)
-  mvn -e --no-transfer-progress clean package -Passembly
+  mvn -e --no-transfer-progress clean package -Passembly,no-validations
   CS_POM_VERSION="$(getCheckstylePomVersion)"
   echo version:"$CS_POM_VERSION"
   mkdir -p .ci-temp
@@ -564,38 +564,54 @@ javac17)
   fi
   ;;
 
+javac19)
+  files=($(grep -Rl --include='*.java' ': Compilable with Java19' \
+        src/test/resources-noncompilable || true))
+  if [[  ${#files[@]} -eq 0 ]]; then
+    echo "No Java19 files to process"
+  else
+      mkdir -p target
+      for file in "${files[@]}"
+      do
+        javac --release 19 --enable-preview -d target "${file}"
+      done
+  fi
+  ;;
+
 jdk14-assembly-site)
-  mvn -e --no-transfer-progress package -Passembly
+  mvn -e --no-transfer-progress package -Passembly,no-validations
   mvn -e --no-transfer-progress site -Pno-validations
   ;;
 
-# executed only in wercker for security reasons
 sonarqube)
   # token could be generated at https://sonarcloud.io/account/security/
   # execution on local for master:
-  # SONAR_TOKEN=xxxxxx ./.ci/wercker.sh sonarqube
+  # SONAR_TOKEN=xxxxxx ./.ci/validation.sh sonarqube
   # execution on local for non-master:
-  # SONAR_TOKEN=xxxxxx PR=xxxxxx WERCKER_GIT_BRANCH=xxxxxx ./.ci/wercker.sh sonarqube
-  if [[ $PR && $PR =~ ^([0-9]*)$ ]]; then
-      SONAR_PR_VARIABLES="-Dsonar.pullrequest.key=$PR"
-      SONAR_PR_VARIABLES+=" -Dsonar.pullrequest.branch=$WERCKER_GIT_BRANCH"
+  # SONAR_TOKEN=xxxxxx PR_NUMBER=xxxxxx PR_BRANCH_NAME=xxxxxx ./.ci/validation.sh sonarqube
+  checkForVariable "SONAR_TOKEN"
+
+  if [[ $PR_NUMBER =~ ^([0-9]+)$ ]]; then
+      SONAR_PR_VARIABLES="-Dsonar.pullrequest.key=$PR_NUMBER"
+      SONAR_PR_VARIABLES+=" -Dsonar.pullrequest.branch=$PR_BRANCH_NAME"
       SONAR_PR_VARIABLES+=" -Dsonar.pullrequest.base=master"
       echo "SONAR_PR_VARIABLES: ""$SONAR_PR_VARIABLES"
   fi
-  if [[ -z $SONAR_TOKEN ]]; then echo "SONAR_TOKEN is not set"; sleep 5s; exit 1; fi
+
   export MAVEN_OPTS='-Xmx2000m'
   # until https://github.com/checkstyle/checkstyle/issues/11637
   # shellcheck disable=SC2086
-  mvn -e --no-transfer-progress -Pno-validations clean package sonar:sonar $SONAR_PR_VARIABLES \
+  mvn -e --no-transfer-progress -Pno-validations clean package sonar:sonar \
+       $SONAR_PR_VARIABLES \
        -Dsonar.host.url=https://sonarcloud.io \
-       -Dsonar.login=$SONAR_TOKEN \
+       -Dsonar.login="$SONAR_TOKEN" \
        -Dsonar.projectKey=org.checkstyle:checkstyle \
        -Dsonar.organization=checkstyle
   echo "report-task.txt:"
   cat target/sonar/report-task.txt
   echo "Verification of sonar gate status"
   export SONAR_API_TOKEN=$SONAR_TOKEN
-  .ci/sonar_break_build.sh
+  .ci/sonar-break-build.sh
   ;;
 
 no-error-pgjdbc)
@@ -606,7 +622,7 @@ no-error-pgjdbc)
   checkout_from https://github.com/pgjdbc/pgjdbc.git
   cd .ci-temp/pgjdbc
   # pgjdbc easily damage build, we should use stable versions
-  git checkout "261181f31c0eb""e2deb593c1cc51174898ad6c50c"
+  git checkout "135be5a4395033a4ba23a1dd70ad76e0bd443a8d"
   ./gradlew --no-parallel --no-daemon checkstyleAll \
             -PenableMavenLocal -Pcheckstyle.version="${CS_POM_VERSION}"
   cd ../
@@ -621,7 +637,7 @@ no-error-orekit)
   checkout_from https://github.com/Hipparchus-Math/hipparchus.git
   cd .ci-temp/hipparchus
   # checkout to version that Orekit expects
-  SHA_HIPPARCHUS="1fb""fb8a2a259a9""7a23e2a387e8fd""c5e0a8402e77"
+  SHA_HIPPARCHUS="fc""c4cd17097a92952a92ec00f755eb""fb99b02001"
   git checkout $SHA_HIPPARCHUS
   mvn -e --no-transfer-progress install -DskipTests
   cd -
@@ -630,7 +646,7 @@ no-error-orekit)
   # no CI is enforced in project, so to make our build stable we should
   # checkout to latest release/development (annotated tag or hash) or sha that have fix we need
   # git checkout $(git describe --abbrev=0 --tags)
-  git checkout "851de782c6""d16d""f725fa""bb4646ff0dd086723415"
+  git checkout "dc""db3086ea33f7cb1582ed3f3618f0ba5e9a628f"
   mvn -e --no-transfer-progress compile checkstyle:check \
     -Dorekit.checkstyle.version="${CS_POM_VERSION}"
   cd ..
@@ -660,9 +676,9 @@ no-error-checkstyles-sevntu)
   CS_POM_VERSION="$(getCheckstylePomVersion)"
   echo CS_version: "${CS_POM_VERSION}"
   mvn -e --no-transfer-progress clean install -Pno-validations
-  mvn -e --no-transfer-progress compile verify \
+  mvn -e --no-transfer-progress compile verify -Psevntu \
     -Dmaven.sevntu-checkstyle-check.checkstyle.version="${CS_POM_VERSION}" \
-    -Dmaven.test.skip=true -Dcheckstyle.ant.skip=true -Dpmd.skip=true -Dspotbugs.skip=true \
+    -Dmaven.test.skip=true -Dpmd.skip=true -Dspotbugs.skip=true \
     -Djacoco.skip=true -Dforbiddenapis.skip=true -Dxml.skip=true
   ;;
 
@@ -676,7 +692,9 @@ no-error-sevntu-checks)
   cd .ci-temp/sevntu.checkstyle/sevntu-checks
   mvn -e --no-transfer-progress -Pno-validations verify  -Dcheckstyle.ant.skip=false \
      -Dcheckstyle.version="${CS_POM_VERSION}" \
-     -Dcheckstyle.configLocation=../../../config/checkstyle_checks.xml
+     -Dcheckstyle.configLocation=../../../config/checkstyle-checks.xml \
+     -Dcheckstyle.nonMain.configLocation=../../../config/checkstyle-non-main-files-checks.xml \
+     -Dcheckstyle.non-main-files-suppressions.file=config/checkstyle-non-main-files-suppressions.xml
   cd ../../
   removeFolderWithProtectedFiles sevntu.checkstyle
   ;;
@@ -691,11 +709,11 @@ no-error-contribution)
   cd .ci-temp/contribution
   cd patch-diff-report-tool
   mvn -e --no-transfer-progress verify -DskipTests -Dcheckstyle.version="${CS_POM_VERSION}" \
-     -Dcheckstyle.configLocation=../../../config/checkstyle_checks.xml
+     -Dcheckstyle.configLocation=../../../config/checkstyle-checks.xml
   cd ../
   cd releasenotes-builder
   mvn -e --no-transfer-progress verify -DskipTests -Dcheckstyle.version="${CS_POM_VERSION}" \
-     -Dcheckstyle.configLocation=../../../config/checkstyle_checks.xml
+     -Dcheckstyle.configLocation=../../../config/checkstyle-checks.xml
   cd ../../
   removeFolderWithProtectedFiles contribution
   ;;
@@ -709,7 +727,7 @@ no-error-methods-distance)
   checkout_from https://github.com/sevntu-checkstyle/methods-distance.git
   cd .ci-temp/methods-distance
   mvn -e --no-transfer-progress verify -DskipTests -Dcheckstyle-version="${CS_POM_VERSION}" \
-     -Dcheckstyle.configLocation=../../config/checkstyle_checks.xml
+     -Dcheckstyle.configLocation=../../config/checkstyle-checks.xml
   cd ..
   removeFolderWithProtectedFiles  methods-distance
   ;;
@@ -741,18 +759,6 @@ no-error-equalsverifier)
     checkstyle:check -Dversion.checkstyle="${CS_POM_VERSION}"
   cd ../
   removeFolderWithProtectedFiles equalsverifier
-  ;;
-
-no-error-apex-core)
-  CS_POM_VERSION="$(getCheckstylePomVersion)"
-  echo CS_version: "${CS_POM_VERSION}"
-  mvn -e --no-transfer-progress clean install -Pno-validations
-  echo "Checkout target sources ..."
-  checkout_from https://github.com/checkstyle/apex-core
-  cd .ci-temp/apex-core
-  mvn -e --no-transfer-progress compile checkstyle:check -Dcheckstyle.version="${CS_POM_VERSION}"
-  cd ../
-  removeFolderWithProtectedFiles apex-core
   ;;
 
 no-error-strata)
@@ -1068,8 +1074,75 @@ git-check-pull-number)
   ;;
 
 assembly-site)
-  mvn -e --no-transfer-progress package -Passembly
+  mvn -e --no-transfer-progress package -Passembly,no-validations
   mvn -e --no-transfer-progress site -Dlinkcheck.skip=true
+  ;;
+
+jacoco)
+  export MAVEN_OPTS='-Xmx2000m'
+  mvn -e --no-transfer-progress clean test \
+    jacoco:restore-instrumented-classes \
+    jacoco:report@default-report \
+    jacoco:check@default-check
+  # if launch is not from CI, we skip this step
+  if [[ $CI == 'true' ]]; then
+    echo "Reporting to codecov"
+    bash <(curl --fail-with-body -s https://codecov.io/bash)
+  else
+    echo "No reporting to codecov outside CI"
+  fi
+  ;;
+
+ci-temp-check)
+    fail=0
+    mkdir -p .ci-temp
+    if [ -z "$(ls -A .ci-temp)" ]; then
+        echo "Folder .ci-temp/ is empty."
+    else
+        echo "Folder .ci-temp/ is not empty. Verification failed."
+        echo "Contents of .ci-temp/:"
+        fail=1
+    fi
+    ls -A .ci-temp
+    sleep 5s
+    exit $fail
+  ;;
+
+  check-github-workflows-concurrency)
+    GITHUB_WORKFLOW_FILES=$(find .github/workflows -maxdepth 1 -not -type d -name "*.y*ml")
+
+    FILES_NO_CONCURRENCY=()
+    for f in $GITHUB_WORKFLOW_FILES; do
+      if ! grep -wq "concurrency:" "$f"; then
+            FILES_NO_CONCURRENCY+=( $f )
+      fi
+    done
+
+    if [[ ${#FILES_NO_CONCURRENCY[@]} -gt 0 ]]; then
+      echo "The following Github workflows are missing a concurrency block:"
+    fi
+
+    for value in "${FILES_NO_CONCURRENCY[@]}"; do
+      echo "$value"
+    done
+
+    exit ${#FILES_NO_CONCURRENCY[@]}
+    ;;
+
+check-wildcards-on-pitest-target-classes)
+  ALL_CLASSES=$(xmlstarlet sel \
+    -N x=http://maven.apache.org/POM/4.0.0 \
+    -t -v "/x:project/x:profiles/x:profile//x:targetClasses/x:param" \
+    -n pom.xml)
+
+  CLASSES_NO_WILDCARD=$(echo "$ALL_CLASSES" | grep -v ".*\*\$" | grep -v -e '^\s*$' || echo)
+  CLASSES_NO_WILDCARD_COUNT=$(echo "$CLASSES_NO_WILDCARD" | grep -v -e '^\s*$' | wc -l)
+
+  if [[ "$CLASSES_NO_WILDCARD_COUNT" -gt 0 ]]; then
+    echo "Append asterisks to the following pitest target classes in pom.xml:"
+    echo "$CLASSES_NO_WILDCARD"
+  fi
+  exit "$CLASSES_NO_WILDCARD_COUNT"
   ;;
 
 *)

@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code and other text files for adherence to a set of rules.
-// Copyright (C) 2001-2022 the original author or authors.
+// Copyright (C) 2001-2023 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,6 @@ import static com.google.common.truth.Truth.assertWithMessage;
 import static com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck.MSG_EMPTY;
 import static com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck.MSG_EXTRA_HTML;
 import static com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck.MSG_INCOMPLETE_TAG;
-import static com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck.MSG_JAVADOC_MISSING;
 import static com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck.MSG_NO_PERIOD;
 import static com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck.MSG_UNCLOSED_HTML;
 
@@ -296,11 +295,19 @@ public class JavadocStyleCheckTest
     }
 
     @Test
-    public void testOnInputWithNoJavadoc() throws Exception {
+    public void testOnInputWithNoJavadoc1() throws Exception {
         final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
 
         verifyWithInlineConfigParser(
-                getPath("InputJavadocStyleNoJavadoc.java"), expected);
+                getPath("InputJavadocStyleNoJavadoc1.java"), expected);
+    }
+
+    @Test
+    public void testOnInputWithNoJavadoc2() throws Exception {
+        final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
+
+        verifyWithInlineConfigParser(
+                getPath("InputJavadocStyleNoJavadoc2.java"), expected);
     }
 
     @Test
@@ -477,12 +484,30 @@ public class JavadocStyleCheckTest
 
     @Test
     public void packageInfoMissing() throws Exception {
-        final String[] expected = {
-            "16:1: " + getCheckMessage(MSG_JAVADOC_MISSING),
-        };
+        final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
 
         verifyWithInlineConfigParser(
                 getPath("bothfiles" + File.separator + "package-info.java"),
+               expected);
+    }
+
+    @Test
+    public void packageInfoMissingPeriod() throws Exception {
+        final String[] expected = {
+            "16: " + getCheckMessage(MSG_NO_PERIOD),
+        };
+
+        verifyWithInlineConfigParser(
+                getPath("missingperiod" + File.separator + "package-info.java"),
+               expected);
+    }
+
+    @Test
+    public void testNothing() throws Exception {
+        final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
+
+        verifyWithInlineConfigParser(
+                getPath("InputJavadocStyleNothing.java"),
                expected);
     }
 

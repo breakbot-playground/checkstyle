@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code and other text files for adherence to a set of rules.
-// Copyright (C) 2001-2022 the original author or authors.
+// Copyright (C) 2001-2023 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,10 +31,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import com.puppycrawl.tools.checkstyle.AbstractAutomaticBean;
 import com.puppycrawl.tools.checkstyle.PropertyType;
 import com.puppycrawl.tools.checkstyle.XdocsPropertyType;
 import com.puppycrawl.tools.checkstyle.api.AuditEvent;
-import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
 import com.puppycrawl.tools.checkstyle.api.FileText;
 import com.puppycrawl.tools.checkstyle.api.Filter;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
@@ -316,7 +316,7 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  *
  * @since 8.6
  */
-public class SuppressWithPlainTextCommentFilter extends AutomaticBean implements Filter {
+public class SuppressWithPlainTextCommentFilter extends AbstractAutomaticBean implements Filter {
 
     /** Comment format which turns checkstyle reporting off. */
     private static final String DEFAULT_OFF_FORMAT = "// CHECKSTYLE:OFF";

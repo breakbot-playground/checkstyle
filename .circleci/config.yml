@@ -22,7 +22,7 @@ jobs:
           command: |
             mkdir .idea
             cp config/intellij-idea-inspections-misc.xml .idea/misc.xml
-            ./.ci/idea_inspection.sh
+            ./.ci/idea-inspection.sh
           no_output_timeout: 25m
           working_directory: ~/project
       - store_artifacts:
@@ -50,7 +50,9 @@ jobs:
       - run:
           command: << parameters.command >>
       - run:
-          command: ./.ci/validation.sh git-diff
+          command: |
+            ./.ci/validation.sh git-diff
+            ./.ci/validation.sh ci-temp-check
       - save_cache:
           name: Save Maven repo cache
           key: mvn-cache-{{ checksum "pom.xml" }}
@@ -67,12 +69,50 @@ jobs:
       - run:
           name: run << parameters.command >>
           command: |
+            sudo apt update
+            sudo apt install -y xmlstarlet --no-install-recommends apt-utils
             export PULL_REQUEST=$CIRCLE_PR_NUMBER
             export PR_HEAD_SHA=$CIRCLE_SHA1
             export PR_NUMBER=$CIRCLE_PR_NUMBER
             << parameters.command >>
 
+  sonarqube:
+    docker:
+      - image: checkstyle/jdk-11-groovy-git-mvn:11.0.13__3.0.9__2.25.1__3.6.3
+
+    steps:
+      - checkout
+      - run: apt-get install -y jq
+      - run:
+          name: Run sonarqube
+          command: |
+            export PR_NUMBER=$CIRCLE_PR_NUMBER
+            export PR_BRANCH_NAME=$CIRCLE_BRANCH
+            export SONAR_API_TOKEN=$SONAR_TOKEN
+            ./.ci/validation.sh sonarqube
+
+  yamllint:
+    docker:
+      - image: cimg/base:2022.11
+
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt update
+            sudo apt install -y yamllint
+      - run:
+          name: Run yamllint
+          command: yamllint -f parsable -c config/yamllint.yaml .
+
 workflows:
+  sonarqube:
+    jobs:
+      - sonarqube:
+          context:
+            - sonarqube
+
   test:
     jobs:
       # no-exception-test script
@@ -154,10 +194,6 @@ workflows:
           name: "no-warning-imports-java-design-patterns"
           image-name: *custom_img
           command: "./.ci/validation.sh no-warning-imports-java-design-patterns"
-#      - validate-with-maven-script:
-#          name: "sonarqube"
-#          image-name: *custom_img
-#          command: "./.ci/validation.sh sonarqube"
       - validate-with-maven-script:
           name: "checkstyle-and-sevntu"
           image-name: *custom_img
@@ -201,6 +237,14 @@ workflows:
       - validate-with-script:
           name: "checkchmod"
           command: "./.ci/checkchmod.sh"
+      - validate-with-script:
+          name: "check-github-workflows-concurrency"
+          command: "./.ci/validation.sh check-github-workflows-concurrency"
+      - yamllint
+      - validate-with-script:
+          name: "check-wildcards-on-pitest-target-classes"
+          image-name: "cimg/base:2022.11"
+          command: "./.ci/validation.sh check-wildcards-on-pitest-target-classes"
 
   javac-validation:
     jobs:
@@ -226,6 +270,10 @@ workflows:
           name: "javac17"
           image-name: "cimg/openjdk:17.0.5"
           command: "./.ci/validation.sh javac17"
+      - validate-with-script:
+          name: "javac19"
+          image-name: "cimg/openjdk:19.0.1"
+          command: "./.ci/validation.sh javac19"
 
   site-validation:
     jobs:

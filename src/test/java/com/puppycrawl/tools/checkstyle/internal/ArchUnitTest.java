@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code and other text files for adherence to a set of rules.
-// Copyright (C) 2001-2022 the original author or authors.
+// Copyright (C) 2001-2023 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,6 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
@@ -39,8 +38,8 @@ public class ArchUnitTest {
 
     /**
      * Suppression list containing violations from {@code classShouldNotDependOnUtilPackages}
-     * ArchRule. Location of the violation (eg - {@code in (AutomaticBean.java:372)}) has been
-     * omitted as line number can change with modifications to the file.
+     * ArchRule. Location of the violation (eg - {@code in (AbstractAutomaticBean.java:372)})
+     * has been omitted as line number can change with modifications to the file.
      */
     private static final List<String> API_PACKAGE_SUPPRESSION_DETAILS = List.of(
         "Constructor <com.puppycrawl.tools.checkstyle.api.FileText.<init>(java.io.File, java.lang"
@@ -66,27 +65,21 @@ public class ArchUnitTest {
         "Method <com.puppycrawl.tools.checkstyle.api.AbstractFileSetCheck.setFileExtensions"
             + "([Ljava.lang.String;)> calls method <com.puppycrawl.tools.checkstyle.utils"
             + ".CommonUtil.startsWithChar(java.lang.String, char)>",
-        "Method <com.puppycrawl.tools.checkstyle.api.AutomaticBean$PatternConverter.convert(java"
-            + ".lang.Class, java.lang.Object)> calls method <com.puppycrawl.tools.checkstyle"
-            + ".utils.CommonUtil.createPattern(java.lang.String)>",
-        "Method <com.puppycrawl.tools.checkstyle.api.AutomaticBean$RelaxedStringArrayConverter"
-            + ".convert(java.lang.Class, java.lang.Object)> gets field <com.puppycrawl.tools"
-            + ".checkstyle.utils.CommonUtil.EMPTY_STRING_ARRAY>",
-        "Method <com.puppycrawl.tools.checkstyle.api.AutomaticBean$UriConverter.convert(java.lang"
-            + ".Class, java.lang.Object)> calls method <com.puppycrawl.tools.checkstyle.utils"
-            + ".CommonUtil.getUriByFilename(java.lang.String)>",
-        "Method <com.puppycrawl.tools.checkstyle.api.AutomaticBean$UriConverter.convert(java.lang"
-            + ".Class, java.lang.Object)> calls method <com.puppycrawl.tools.checkstyle.utils"
-            + ".CommonUtil.isBlank(java.lang.String)>",
+        "Method <com.puppycrawl.tools.checkstyle.AbstractAutomaticBean$PatternConverter"
+            + ".convert(java.lang.Class, java.lang.Object)> calls method <com.puppycrawl.tools"
+            + ".checkstyle.utils.CommonUtil.createPattern(java.lang.String)>",
+        "Method <com.puppycrawl.tools.checkstyle.AbstractAutomaticBean$RelaxedStringArray"
+            + "Converter.convert(java.lang.Class, java.lang.Object)> gets field <com.puppycrawl"
+            + ".tools.checkstyle.utils.CommonUtil.EMPTY_STRING_ARRAY>",
+        "Method <com.puppycrawl.tools.checkstyle.AbstractAutomaticBean$UriConverter.convert("
+            + "java.lang.Class, java.lang.Object)> calls method <com.puppycrawl.tools.checkstyle"
+            + ".utils.CommonUtil.getUriByFilename(java.lang.String)>",
+        "Method <com.puppycrawl.tools.checkstyle.AbstractAutomaticBean$UriConverter.convert("
+            + "java.lang.Class, java.lang.Object)> calls method <com.puppycrawl.tools.checkstyle"
+            + ".utils.CommonUtil.isBlank(java.lang.String)>",
         "Method <com.puppycrawl.tools.checkstyle.api.FileContents.lineIsBlank(int)> calls method "
             + "<com.puppycrawl.tools.checkstyle.utils.CommonUtil.isBlank(java.lang.String)>"
     );
-
-    @BeforeAll
-    public static void init() {
-        System.setProperty(
-                "org.slf4j.simpleLogger.log.com.tngtech.archunit.core.PluginLoader", "off");
-    }
 
     /**
      * The goal is to ensure all classes of a specific name pattern have non-protected methods,

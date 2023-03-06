@@ -283,7 +283,7 @@ public class A {
             Sun Style</a>
           </li>
           <li>
-            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle_checks.xml+repo%3Acheckstyle%2Fcheckstyle+DesignForExtension">
+            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle-checks.xml+repo%3Acheckstyle%2Fcheckstyle+DesignForExtension">
             Checkstyle Style</a>
           </li>
         </ul>
@@ -374,7 +374,7 @@ class TestAnonymousInnerClasses { // OK, class has an anonymous inner class.
             Sun Style</a>
           </li>
           <li>
-            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle_checks.xml+repo%3Acheckstyle%2Fcheckstyle+FinalClass">
+            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle-checks.xml+repo%3Acheckstyle%2Fcheckstyle+FinalClass">
             Checkstyle Style</a>
           </li>
         </ul>
@@ -492,7 +492,7 @@ class UtilityClass { // violation, class only has a static field
             Sun Style</a>
           </li>
           <li>
-            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle_checks.xml+repo%3Acheckstyle%2Fcheckstyle+HideUtilityClassConstructor">
+            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle-checks.xml+repo%3Acheckstyle%2Fcheckstyle+HideUtilityClassConstructor">
             Checkstyle Style</a>
           </li>
         </ul>
@@ -566,7 +566,7 @@ class Test3 {
       <subsection name="Example of Usage" id="InnerTypeLast_Example_of_Usage">
         <ul>
           <li>
-            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle_checks.xml+repo%3Acheckstyle%2Fcheckstyle+InnerTypeLast">
+            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle-checks.xml+repo%3Acheckstyle%2Fcheckstyle+InnerTypeLast">
             Checkstyle Style</a>
           </li>
         </ul>
@@ -695,7 +695,7 @@ public interface Test2 { // violation
             Sun Style</a>
           </li>
           <li>
-            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle_checks.xml+repo%3Acheckstyle%2Fcheckstyle+InterfaceIsType">
+            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle-checks.xml+repo%3Acheckstyle%2Fcheckstyle+InterfaceIsType">
             Checkstyle Style</a>
           </li>
         </ul>
@@ -789,12 +789,146 @@ public interface Test2 { // violation
         <source>
 &lt;module name=&quot;MutableException&quot;/&gt;
         </source>
+        <p>Example:</p>
+        <div class="wrapper">
+          <source>
+class FirstClass extends Exception {
+  private int code; // OK, class name doesn't match with default pattern
+
+  public FirstClass() {
+    code = 1;
+  }
+}
+
+class MyException extends Exception {
+  private int code; // violation, The field 'code' must be declared final
+
+  public MyException() {
+    code = 2;
+  }
+}
+
+class MyThrowable extends Throwable {
+  final int code; // OK
+  String message; // violation, The field 'message' must be declared final
+
+  public MyThrowable(int code, String message) {
+    this.code = code;
+    this.message = message;
+  }
+}
+
+class BadException extends java.lang.Exception {
+  int code; // violation, The field 'code' must be declared final
+
+  public BadException(int code) {
+    this.code = code;
+  }
+}
+          </source>
+        </div>
+
+        <p>
+          To configure the check so that it checks for class name that ends
+          with 'Exception':
+        </p>
+        <source>
+&lt;module name=&quot;MutableException&quot;&gt;
+  &lt;property name=&quot;format&quot; value=&quot;^.*Exception$&quot;/&gt;
+&lt;/module&gt;
+        </source>
+        <p>Example:</p>
+        <div class="wrapper">
+          <source>
+class FirstClass extends Exception {
+  private int code; // OK, class name doesn't match with given pattern
+
+  public FirstClass() {
+    code = 1;
+  }
+}
+
+class MyException extends Exception {
+  private int code; // violation, The field 'code' must be declared final
+
+  public MyException() {
+    code = 2;
+  }
+}
+
+class MyThrowable extends Throwable {
+  final int code; // OK, class name doesn't match with given pattern
+  String message; // OK, class name doesn't match with given pattern
+
+  public MyThrowable(int code, String message) {
+    this.code = code;
+    this.message = message;
+  }
+}
+
+class BadException extends java.lang.Exception {
+  int code; // violation, The field 'code' must be declared final
+
+  public BadException(int code) {
+    this.code = code;
+  }
+}
+          </source>
+        </div>
+
+        <p>
+          To configure the check so that it checks for type name that is used in
+          'extends' and ends with 'Throwable':
+        </p>
+        <source>
+&lt;module name=&quot;MutableException&quot;&gt;
+  &lt;property name=&quot;extendedClassNameFormat&quot; value=&quot;^.*Throwable$&quot;/&gt;
+&lt;/module&gt;
+        </source>
+        <p>Example:</p>
+        <div class="wrapper">
+          <source>
+class FirstClass extends Exception {
+  private int code; // OK, extended class name doesn't match with given pattern
+
+  public FirstClass() {
+    code = 1;
+  }
+}
+
+class MyException extends Exception {
+  private int code; // OK, extended class name doesn't match with given pattern
+
+  public MyException() {
+    code = 2;
+  }
+}
+
+class MyThrowable extends Throwable {
+  final int code; // OK
+  String message; // violation, The field 'message' must be declared final
+
+  public MyThrowable(int code, String message) {
+    this.code = code;
+    this.message = message;
+  }
+}
+
+class BadException extends java.lang.Exception {
+  int code; // OK, extended class name doesn't match with given pattern
+
+  public BadException(int code) {
+    this.code = code;
+  }
+}
+          </source>
+        </div>
       </subsection>
 
       <subsection name="Example of Usage" id="MutableException_Example_of_Usage">
         <ul>
           <li>
-            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle_checks.xml+repo%3Acheckstyle%2Fcheckstyle+MutableException">
+            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle-checks.xml+repo%3Acheckstyle%2Fcheckstyle+MutableException">
             Checkstyle Style</a>
           </li>
         </ul>
@@ -902,7 +1036,7 @@ public class Foo { // OK, only one top-level class
             Google Style</a>
           </li>
           <li>
-            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle_checks.xml+repo%3Acheckstyle%2Fcheckstyle+OneTopLevelClass">
+            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle-checks.xml+repo%3Acheckstyle%2Fcheckstyle+OneTopLevelClass">
             Checkstyle Style</a>
           </li>
         </ul>
@@ -1108,7 +1242,7 @@ class Test {
       <subsection name="Example of Usage" id="ThrowsCount_Example_of_Usage">
         <ul>
           <li>
-            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle_checks.xml+repo%3Acheckstyle%2Fcheckstyle+ThrowsCount">
+            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle-checks.xml+repo%3Acheckstyle%2Fcheckstyle+ThrowsCount">
             Checkstyle Style</a>
           </li>
         </ul>
@@ -1544,7 +1678,7 @@ public class InputPublicImmutable {
             Sun Style</a>
           </li>
           <li>
-            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle_checks.xml+repo%3Acheckstyle%2Fcheckstyle+VisibilityModifier">
+            <a href="https://github.com/search?q=path%3Aconfig+filename%3Acheckstyle-checks.xml+repo%3Acheckstyle%2Fcheckstyle+VisibilityModifier">
             Checkstyle Style</a>
           </li>
         </ul>

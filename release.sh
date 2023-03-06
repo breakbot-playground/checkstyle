@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
+source ./.ci/util.sh
+
 echo "Make sure you prepared your PC for automative deployment"
 echo "Release process: https://github.com/checkstyle/checkstyle/wiki/How-to-make-a-release"
 
-RELEASE=$(xmlstarlet sel -N pom=http://maven.apache.org/POM/4.0.0 \
-           -t -m pom:project -v pom:version pom.xml | sed "s/-SNAPSHOT//")
+RELEASE=$(getCheckstylePomVersionWithoutSnapshot)
 PREV_RELEASE=$(git describe --abbrev=0 "$(git rev-list --tags --max-count=1)" \
                 | sed "s/checkstyle-//")
 
@@ -35,11 +36,12 @@ SKIP_CHECKSTYLE="-Dcheckstyle.ant.skip=true -Dcheckstyle.skip=true"
 SKIP_OTHERS="-Dpmd.skip=true -Dspotbugs.skip=true -Djacoco.skip=true -Dxml.skip=true"
 
 echo "Version bump in pom.xml (release:prepare) ..."
-mvn -e --no-transfer-progress -Pgpg release:prepare -B -Darguments="$SKIP_TEST $SKIP_CHECKSTYLE \
-  $SKIP_OTHERS"
+mvn -e --no-transfer-progress -Pgpg release:prepare -B \
+  -Darguments="$SKIP_TEST $SKIP_CHECKSTYLE $SKIP_OTHERS"
 
 echo "Deployment of jars to maven central (release:perform) ..."
-mvn -e --no-transfer-progress -Pgpg release:perform -Darguments="$SKIP_CHECKSTYLE"
+mvn -e --no-transfer-progress -Pgpg release:perform \
+  -Darguments="$SKIP_TEST $SKIP_CHECKSTYLE $SKIP_OTHERS"
 
 echo "Go to folder where site was build and sources are already at required tag"
 cd target/checkout
@@ -48,7 +50,7 @@ echo "Generating web site"
 mvn -e --no-transfer-progress site -Pno-validations -Dmaven.javadoc.skip=false
 
 echo "Generating uber jar ...(no clean to keep site resources just in case)"
-mvn -e --no-transfer-progress -Passembly package
+mvn -e --no-transfer-progress -Passembly,no-validations package
 
 echo "Come back repo folder"
 cd ../../
@@ -59,12 +61,11 @@ NEW_RELEASE=$(git describe --abbrev=0 | cut -d '-' -f 2)
 PREV_RELEASE=$(git describe --abbrev=0 --tags \
         "$(git rev-list --tags --skip=1 --max-count=1)" \
     | cut -d '-' -f 2)
-FUTURE_RELEASE=$(xmlstarlet sel -N pom=http://maven.apache.org/POM/4.0.0 \
-           -t -m pom:project -v pom:version pom.xml | sed "s/-SNAPSHOT//")
+FUTURE_RELEASE=$(getCheckstylePomVersionWithoutSnapshot)
 TKN=$(cat ~/.m2/token-checkstyle.txt)
 
 echo "Updating Github tag page"
-curl --fail-with-body -i -H "Authorization: token $TKN" \
+curl -i -H "Authorization: token $TKN" \
   -d "{ \"tag_name\": \"checkstyle-$NEW_RELEASE\", \
         \"target_commitish\": \"master\", \
         \"name\": \"\", \
@@ -73,19 +74,19 @@ curl --fail-with-body -i -H "Authorization: token $TKN" \
   -X POST https://api.github.com/repos/checkstyle/checkstyle/releases
 
 echo "Publishing 'all' jar to Github"
-RELEASE_ID=$(curl --fail-with-body -s -X GET \
+RELEASE_ID=$(curl -s -X GET \
   https://api.github.com/repos/checkstyle/checkstyle/releases/tags/checkstyle-"$NEW_RELEASE" \
   | jq ".id")
-curl --fail-with-body -i -H "Authorization: token $TKN" \
+curl -i -H "Authorization: token $TKN" \
   -H "Content-Type: application/zip" \
   --data-binary @"target/checkout/target/checkstyle-$NEW_RELEASE-all.jar" \
   -X POST https://uploads.github.com/repos/checkstyle/checkstyle/releases/"$RELEASE_ID"/assets?name=checkstyle-"$NEW_RELEASE"-all.jar
 
 echo "Close previous milestone at github"
-MILESTONE_ID=$(curl --fail-with-body -s \
+MILESTONE_ID=$(curl -s \
                 -X GET https://api.github.com/repos/checkstyle/checkstyle/milestones?state=open \
                 | jq ".[0] | .number")
-curl --fail-with-body -i -H "Authorization: token $TKN" \
+curl -i -H "Authorization: token $TKN" \
   -d "{ \"state\": \"closed\" }" \
   -X PATCH https://api.github.com/repos/checkstyle/checkstyle/milestones/"$MILESTONE_ID"
 
@@ -95,7 +96,7 @@ LAST_SUNDAY_DAY=$(cal -d "$(date -d "next month" +"%Y-%m")" \
                     | awk '/^ *[0-9]/ { d=$1 } END { print d }')
 LAST_SUNDAY_DATETIME=$(date -d "next month" +"%Y-%m")"-$LAST_SUNDAY_DAY""T08:00:00Z"
 echo "$LAST_SUNDAY_DATETIME"
-curl --fail-with-body -i -H "Authorization: token $TKN" \
+curl -i -H "Authorization: token $TKN" \
   -d "{ \"title\": \"$FUTURE_RELEASE\", \
         \"state\": \"open\", \
         \"description\": \"\", \
@@ -104,14 +105,14 @@ curl --fail-with-body -i -H "Authorization: token $TKN" \
   -X POST https://api.github.com/repos/checkstyle/checkstyle/milestones
 
 echo "Creation of issue in eclipse-cs repo ..."
-curl --fail-with-body -i -H "Authorization: token $TKN" \
+curl -i -H "Authorization: token $TKN" \
   -d "{ \"title\": \"upgrade to checkstyle $NEW_RELEASE\", \
         \"body\": \"https://checkstyle.org/releasenotes.html#Release_$NEW_RELEASE\" \
         }" \
   -X POST https://api.github.com/repos/checkstyle/eclipse-cs/issues
 
 echo "Creation of issue in sonar-checkstyle repo ..."
-curl --fail-with-body -i -H "Authorization: token $TKN" \
+curl -i -H "Authorization: token $TKN" \
   -d "{ \"title\": \"upgrade to checkstyle $NEW_RELEASE\", \
         \"body\": \"https://checkstyle.org/releasenotes.html#Release_$NEW_RELEASE\" \
         }" \

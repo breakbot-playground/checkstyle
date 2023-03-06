@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code and other text files for adherence to a set of rules.
-// Copyright (C) 2001-2022 the original author or authors.
+// Copyright (C) 2001-2023 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -55,7 +55,11 @@ public class LocalizedMessage {
     private final String key;
 
     /**
-     * Arguments for MessageFormat.
+     * Arguments for java.text.MessageFormat, that is why type is Object[].
+     *
+     * <p>Note: Changing types from Object[] will be huge breaking compatibility, as Module
+     * messages use some type formatting already, so better to keep it as Object[].
+     * </p>
      */
     private final Object[] args;
 

@@ -27,7 +27,8 @@
   <suppress checks="AbstractClassNameCheck"
              files="AbstractCheckTest.java|AbstractClassNameCheckTest.java|
                     |AbstractJavadocCheckTest.java|
-                    |AbstractViolationReporterTest.java|AbstractFileSetCheckTest.java"/>
+                    |AbstractViolationReporterTest.java|AbstractFileSetCheckTest.java|
+                    |AbstractAutomaticBeanTest.java"/>
 
   <!-- Tone down the checking for test code -->
   <suppress checks="ExecutableStatementCount|JavaNCSS"
@@ -63,6 +64,9 @@
   <suppress checks="MethodCount" files="[\\/]UnusedLocalVariableCheck.java"/>
   <!-- parse method needs catching Exceptions to print context of execution -->
   <suppress checks="IllegalCatch" files="[\\/]src[\\/]test[\\/].*[\\/]InlineConfigParser\.java"/>
+  <!-- exception maybe thrown while executing the static block -->
+  <suppress checks="IllegalCatch" files="[\\/]src[\\/]test[\\/].*[\\/]XpathFileGeneratorAuditListenerTest\.java"/>
+
 
   <!-- we need that set of converters -->
   <suppress checks="ClassDataAbstractionCoupling" files="AutomaticBean\.java"/>

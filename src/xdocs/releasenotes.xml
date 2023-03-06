@@ -10,6 +10,567 @@
 
   <body>
     <!-- placeholder for a new section -->
+    <section name="Release 10.8.0">
+      <div class="releaseDate">26.02.2023</div>
+      <p>Breaking backward compatibility:</p>
+        <ul>
+          <li>
+            Remove Serializable interface from Violation class and EventObject extension from
+            AuditEvent.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12681">#12681</a>
+          </li>
+        </ul>
+      <p>Notes:</p>
+        <ul>
+          <li>
+            Specify violation messages in input files..
+            Author: jxr98
+            <a href="https://github.com/checkstyle/checkstyle/issues/11214">#11214</a>
+          </li>
+          <li>
+            Make action to trigger all release steps.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12720">#12720</a>
+          </li>
+          <li>
+            Make scripts and configurations filenames consistent.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12716">#12716</a>
+          </li>
+          <li>
+            CommitValidationTest should ignore the release process.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12765">#12765</a>
+          </li>
+          <li>
+            Use Shellcheck to resolve violations code in Shell Script.
+            Author: shubh220922, Kevin222004
+            <a href="https://github.com/checkstyle/checkstyle/issues/11637">#11637</a>
+          </li>
+          <li>
+            Update doc for JavadocType.
+            Author: hcy
+            <a href="https://github.com/checkstyle/checkstyle/issues/7601">#7601</a>
+          </li>
+          <li>
+            Release perform action is failing.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12762">#12762</a>
+          </li>
+          <li>
+            Replace all usages of xmlstarlet with getCheckstylePomVersion from util.sh.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12726">#12726</a>
+          </li>
+          <li>
+            confg: cancel 10.8.0 release, see details in #12762.
+            Author: Roman Ivanov
+          </li>
+          <li>
+            End of free builds for CloudBees CodeShip.
+            Author: Roman Ivanov
+            <a href="https://github.com/checkstyle/checkstyle/issues/12758">#12758</a>
+          </li>
+          <li>
+            Define variable for non-main-files-suppressions file.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12761">#12761</a>
+          </li>
+          <li>
+            Fix RegexpOnFileNameCheck message keys.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12748">#12748</a>
+          </li>
+          <li>
+            pitest: groovy does not run when profile fails.
+            Author: Vyom-Yadav
+            <a href="https://github.com/checkstyle/checkstyle/issues/12647">#12647</a>
+          </li>
+          <li>
+            Resolve surviving annotation mutations for pitest.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12591">#12591</a>
+          </li>
+          <li>
+            Checker: false violation removals on other failures.
+            Author: Roman Ivanov
+            <a href="https://github.com/checkstyle/checkstyle/issues/12379">#12379</a>
+          </li>
+          <li>
+            Validation for next version in GitHub action .
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12608">#12608</a>
+          </li>
+          <li>
+            pitest-survival-check-xml.groovy: prints nothing when there are no differences.
+            Author: Vyom-Yadav
+            <a href="https://github.com/checkstyle/checkstyle/issues/12153">#12153</a>
+          </li>
+          <li>
+            `pitest-survival-check-xml.groovy` should automatically update list of suppressions.
+            Author: Vyom-Yadav
+            <a href="https://github.com/checkstyle/checkstyle/issues/12613">#12613</a>
+          </li>
+          <li>
+            Remove admins from white list on commit validation .
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12717">#12717</a>
+          </li>
+          <li>
+            Github action &quot;Release perform&quot;.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12079">#12079</a>
+          </li>
+          <li>
+            pitest: validate wildcards on target classes.
+            Author: Nick Mancuso
+            <a href="https://github.com/checkstyle/checkstyle/issues/12625">#12625</a>
+          </li>
+          <li>
+            Issue 12705: remove .m2 for codenarc execution to make it more stable on download.
+            Author: Roman Ivanov
+          </li>
+          <li>
+            Github action to copy to sourceforge does not work.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12574">#12574</a>
+          </li>
+          <li>
+            update all release action to have &#39;Setup local maven cache&#39; step to optimize
+            download of artifacts.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12571">#12571</a>
+          </li>
+          <li>
+            Push &#39;all&#39; jar action is not working and not failing execution.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12694">#12694</a>
+          </li>
+        </ul>
+    </section>
+    <section name="Release 10.7.0">
+      <div class="releaseDate">31.01.2023</div>
+      <p>Breaking backward compatibility:</p>
+        <ul>
+          <li>
+            Remove CheckstyleAntTask&#39;s classpath parameter.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12338">#12338</a>
+          </li>
+        </ul>
+      <p>New:</p>
+        <ul>
+          <li>
+            Support latest pattern matching syntax in switch labels.
+            Author: Nick Mancuso
+            <a href="https://github.com/checkstyle/checkstyle/issues/12515">#12515</a>
+          </li>
+        </ul>
+      <p>Bug fixes:</p>
+        <ul>
+          <li>
+            UnnecessaryParentheses: false negative on unnecessary parenthesis.
+            Author: Kevin222004
+            <a href="https://github.com/checkstyle/checkstyle/issues/11643">#11643</a>
+          </li>
+        </ul>
+      <p>Notes:</p>
+        <ul>
+          <li>
+            action &#39;R: Close/Create Milestone&#39; is not working.
+            Author: stoyanK7, Roman Ivanov
+            <a href="https://github.com/checkstyle/checkstyle/issues/12570">#12570</a>
+          </li>
+          <li>
+            Resolve surviving pitest-design-check mutations for pitest.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12641">#12641</a>
+          </li>
+          <li>
+            Resolve surviving pitest-coding-require-this-check mutations for pitest.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12626">#12626</a>
+          </li>
+          <li>
+            linkcheck report full of error on damaged links to javadoc.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/11572">#11572</a>
+          </li>
+          <li>
+            Resolve violation from ResultOfMethodCallIgnored inspection.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/11589">#11589</a>
+          </li>
+          <li>
+            All Github CI workflows should have concurrency of 1.
+            Author: Nick Mancuso
+            <a href="https://github.com/checkstyle/checkstyle/issues/12645">#12645</a>
+          </li>
+          <li>
+            Picocli&#39;s coloring interfering with tests.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12667">#12667</a>
+          </li>
+          <li>
+            Remove Apex project from usage in testing .
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/7815">#7815</a>
+          </li>
+          <li>
+            Resolve surviving pitest-metrics-check mutations for pitest.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12637">#12637</a>
+          </li>
+          <li>
+            Update Tests to use new &#39;verifyXxxxxx&#39; method or &#39;execute&#39; that use
+            inlined config in Input files.
+            Author: Shubh Srivastava
+            <a href="https://github.com/checkstyle/checkstyle/issues/11446">#11446</a>
+          </li>
+          <li>
+            Resolve Pitest for profile coding-2.
+            Author: Kevin222004
+            <a href="https://github.com/checkstyle/checkstyle/issues/12331">#12331</a>
+          </li>
+          <li>
+            Resolve surviving pitest-blocks mutations for pitest.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12615">#12615</a>
+          </li>
+          <li>
+            doc: explanation on versioning of checkstyle.
+            Author: Roman Ivanov
+          </li>
+          <li>
+            Corrects classes scanned for pitest to include sub-classes.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12622">#12622</a>
+          </li>
+          <li>
+            Resolve surviving pitest-whitespace mutations for pitest.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12601">#12601</a>
+          </li>
+          <li>
+            Resolve surviving sizes mutations for pitest.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12592">#12592</a>
+          </li>
+          <li>
+            Empty ErrorStream in `checker-framework.groovy` to prevent buffer exhaustion and
+            external processes from blocking.
+            Author: Vyom-Yadav
+            <a href="https://github.com/checkstyle/checkstyle/issues/12522">#12522</a>
+          </li>
+          <li>
+            Resolve surviving pitest-java-ast-visitor mutations for pitest.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12594">#12594</a>
+          </li>
+          <li>
+            Specify violation messages in input files..
+            Author: Shubh Srivastava
+            <a href="https://github.com/checkstyle/checkstyle/issues/11214">#11214</a>
+          </li>
+          <li>
+            Resolve surviving modifier mutations for pitest.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12587">#12587</a>
+          </li>
+          <li>
+            Resolve surviving naming mutations for pitest.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12589">#12589</a>
+          </li>
+          <li>
+            Restore pitest.sh to ease operation on local.
+            Author: Roman Ivanov
+            <a href="https://github.com/checkstyle/checkstyle/issues/12557">#12557</a>
+          </li>
+          <li>
+            Lint GitHub Actions workflows executed twice.
+            Author: Nick Mancuso
+            <a href="https://github.com/checkstyle/checkstyle/issues/12568">#12568</a>
+          </li>
+          <li>
+            `bump_license_year.yml` not adding year to commit message..
+            Author: Vyom-Yadav
+            <a href="https://github.com/checkstyle/checkstyle/issues/12572">#12572</a>
+          </li>
+        </ul>
+    </section>
+    <section name="Release 10.6.0">
+      <div class="releaseDate">31.12.2022</div>
+      <p>Breaking backward compatibility:</p>
+        <ul>
+          <li>
+            Simplify JavadocStyleCheck: remove functionality for missing package-info Javadoc.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12520">#12520</a>
+          </li>
+        </ul>
+      <p>Bug fixes:</p>
+        <ul>
+          <li>
+            Inconsistent allowedAbbreviations when a method contains an underscore.
+            Author: Arin Modi
+            <a href="https://github.com/checkstyle/checkstyle/issues/12409">#12409</a>
+          </li>
+          <li>
+            NoWhitespaceAfter false positive on synchronized method.
+            Author: Nick Mancuso
+            <a href="https://github.com/checkstyle/checkstyle/issues/12486">#12486</a>
+          </li>
+          <li>
+            Null pointer exception with records in RequireThisCheck.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/11807">#11807</a>
+          </li>
+        </ul>
+      <p>Notes:</p>
+        <ul>
+          <li>
+            Resolve pitest for profile metrics.
+            Author: Kevin222004
+            <a href="https://github.com/checkstyle/checkstyle/issues/12333">#12333</a>
+          </li>
+          <li>
+            Review usages of `BeforeAll` in tests.
+            Author: Vyom-Yadav
+            <a href="https://github.com/checkstyle/checkstyle/issues/12100">#12100</a>
+          </li>
+          <li>
+            Create CI task to lint github actions.
+            Author: Nick Mancuso
+            <a href="https://github.com/checkstyle/checkstyle/issues/12501">#12501</a>
+          </li>
+          <li>
+            Run regression testing in CI over openjdk19.
+            Author: Nick Mancuso
+            <a href="https://github.com/checkstyle/checkstyle/issues/12519">#12519</a>
+          </li>
+          <li>
+            Replace backward slash with forward slash while creating `CheckerFrameworkError` object
+            in `checker-framework.groovy`.
+            Author: Vyom-Yadav
+            <a href="https://github.com/checkstyle/checkstyle/issues/12524">#12524</a>
+          </li>
+          <li>
+            Convert sevntu-checkstyle-check to ant run.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/5385">#5385</a>
+          </li>
+          <li>
+            doc: remove &#39;pre&#39; tags from description.
+            Author: Nick Mancuso
+          </li>
+          <li>
+            Create YAML linting CI task.
+            Author: Nick Mancuso
+            <a href="https://github.com/checkstyle/checkstyle/issues/12435">#12435</a>
+          </li>
+          <li>
+            Use Shellcheck to resolve violations code in Shell Script.
+            Author: Arin Modi
+            <a href="https://github.com/checkstyle/checkstyle/issues/11637">#11637</a>
+          </li>
+          <li>
+            All scripts that print example of execution should not have hardcoded name in message .
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12496">#12496</a>
+          </li>
+          <li>
+            &#39;R: Push Release Notes&#39; makes xml section version as snapshot .
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12488">#12488</a>
+          </li>
+          <li>
+            &#39;R: Push Release Notes&#39; failing on push.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12479">#12479</a>
+          </li>
+          <li>
+            Remove &#39;releasenotes.xml after commit:&#39;.
+            Author: Roman Ivanov
+            <a href="https://github.com/checkstyle/checkstyle/issues/12468">#12468</a>
+          </li>
+          <li>
+            &#39;R: Push Release Notes&#39; failing.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12464">#12464</a>
+          </li>
+          <li>
+            Create CI task to enforce &#39;.ci&#39; directory contains only script files.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12463">#12463</a>
+          </li>
+        </ul>
+    </section>
+    <section name="Release 10.5.0">
+      <div class="releaseDate">27.11.2022</div>
+      <p>New:</p>
+        <ul>
+          <li>
+            Allow 3rd party Check providers to group modules under custom parent module.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/11644">#11644</a>
+          </li>
+        </ul>
+      <p>Bug fixes:</p>
+        <ul>
+          <li>
+            checkstyle 10.3.3 and newer throws NullPointerException on annotated generic types from
+            IllegalType rule.
+            Author: Nick Mancuso
+            <a href="https://github.com/checkstyle/checkstyle/issues/12443">#12443</a>
+          </li>
+          <li>
+            False positive in NoWhiteSpaceAfter.
+            Author: Andrei Paikin
+            <a href="https://github.com/checkstyle/checkstyle/issues/12345">#12345</a>
+          </li>
+          <li>
+            EmptyForInitializerPad: ArrayIndexOutOfBoundsException.
+            Author: Andrei Paikin
+            <a href="https://github.com/checkstyle/checkstyle/issues/12291">#12291</a>
+          </li>
+        </ul>
+      <p>Notes:</p>
+        <ul>
+          <li>
+            Resolve Pitest suppression for RightCurlyCheck.
+            Author: Arin Modi
+            <a href="https://github.com/checkstyle/checkstyle/issues/12441">#12441</a>
+          </li>
+          <li>
+            Remove new curl parameter from all GitHub actions for release .
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12456">#12456</a>
+          </li>
+          <li>
+            Update Tests to use new &#39;verifyXxxxxx&#39; method or &#39;execute&#39; that use
+            inlined config in Input files.
+            Author: Arin Modi, Shubh Srivastava
+            <a href="https://github.com/checkstyle/checkstyle/issues/11446">#11446</a>
+          </li>
+          <li>
+            Github action &quot;Copy site to sourceforge&quot;.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12081">#12081</a>
+          </li>
+          <li>
+            Issue #11604: separates detail ast from xpath.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/11617">#11617</a>
+          </li>
+          <li>
+            PMD warning in execution logs.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12448">#12448</a>
+          </li>
+          <li>
+            failure of update github.io to clone checkstyle.github.io.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12168">#12168</a>
+          </li>
+          <li>
+            Enforce file size on Java inputs.
+            Author: Arin Modi
+            <a href="https://github.com/checkstyle/checkstyle/issues/11163">#11163</a>
+          </li>
+          <li>
+            failure to publish github release notes &#39; R: Publish GitHub Page&#39;.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12169">#12169</a>
+          </li>
+          <li>
+            Resolve Pitest suppression for AccessModifierOption.
+            Author: Shubh Srivastava
+            <a href="https://github.com/checkstyle/checkstyle/issues/12326">#12326</a>
+          </li>
+          <li>
+            Resolve Pitest suppression for SeparatorWrapCheck.
+            Author: Arin Modi
+            <a href="https://github.com/checkstyle/checkstyle/issues/12430">#12430</a>
+          </li>
+          <li>
+            Re-enable sonar .
+            Author: Nick Mancuso
+            <a href="https://github.com/checkstyle/checkstyle/issues/12431">#12431</a>
+          </li>
+          <li>
+            Investigate why GITHUB token has no access to issues .
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12182">#12182</a>
+          </li>
+          <li>
+            Update doc for MutableException.
+            Author: Arin Modi
+            <a href="https://github.com/checkstyle/checkstyle/issues/7613">#7613</a>
+          </li>
+          <li>
+            Update Test Configuration To Support Adding TreeWalker Property.
+            Author: Arin Modi
+            <a href="https://github.com/checkstyle/checkstyle/issues/12395">#12395</a>
+          </li>
+          <li>
+            Missing Link found on Checkstyle docs.
+            Author: anchitbhuhan
+            <a href="https://github.com/checkstyle/checkstyle/issues/12393">#12393</a>
+          </li>
+          <li>
+            doc: archive release notes for 8.0-8.34.
+            Author: Nick Mancuso
+          </li>
+          <li>
+            add release number validation.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12316">#12316</a>
+          </li>
+          <li>
+            Create instance of regexp check to enforce usage of &#39;fail-with-body&#39; in curl
+            commands.
+            Author: rnveach
+            <a href="https://github.com/checkstyle/checkstyle/issues/12389">#12389</a>
+          </li>
+          <li>
+            Action &#39;Bump version/Update Milestone&#39; is failing to update milestones.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12351">#12351</a>
+          </li>
+          <li>
+            Specify violation messages in input files..
+            Author: Arin Modi, Shaman20
+            <a href="https://github.com/checkstyle/checkstyle/issues/11214">#11214</a>
+          </li>
+          <li>
+            &#39;R: Publish GitHub Page&#39; failing at perform curl command but action status is
+            succcess.
+            Author: stoyanK7
+            <a href="https://github.com/checkstyle/checkstyle/issues/12181">#12181</a>
+          </li>
+          <li>
+            Debug documentation is not clear.
+            Author: NitishKumar06
+            <a href="https://github.com/checkstyle/checkstyle/issues/12207">#12207</a>
+          </li>
+          <li>
+            Improper text in NewLineAtEndOfFileCheck documentation.
+            Author: NitishKumar06
+            <a href="https://github.com/checkstyle/checkstyle/issues/12370">#12370</a>
+          </li>
+          <li>
+            doc: expanded documentation on severities.
+            Author: rnveach
+          </li>
+          <li>
+            Resolve Pitest for Block Profile-2.
+            Author: Kevin222004
+            <a href="https://github.com/checkstyle/checkstyle/issues/12330">#12330</a>
+          </li>
+        </ul>
+    </section>
     <section name="Release 10.4">
       <div class="releaseDate">30.10.2022</div>
       <p>Breaking backward compatibility:</p>

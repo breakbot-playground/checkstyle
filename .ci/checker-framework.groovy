@@ -74,7 +74,7 @@ private static Set<String> getCheckerFrameworkProfiles() {
 private static int checkCheckerFrameworkReport(final String profile) {
     final XmlParser xmlParser = new XmlParser()
     final String suppressedErrorsFileUri =
-            ".${File.separator}.ci${File.separator}" +
+            ".${File.separator}config${File.separator}" +
                     "checker-framework-suppressions${File.separator}${profile}-suppressions.xml"
     final List<List<String>> checkerFrameworkErrors = getCheckerFrameworkErrors(profile)
     List<CheckerFrameworkError> errors = Collections.emptyList()
@@ -112,13 +112,26 @@ private static int checkCheckerFrameworkReport(final String profile) {
  */
 private static List<List<String>> getCheckerFrameworkErrors(final String profile) {
     final List<String> checkerFrameworkLines = new ArrayList<>()
-    final String command = "mvn -e --no-transfer-progress clean compile -P${profile}"
-    final Process process = getOsSpecificCmd(command).execute()
-    process.in.eachLine { final line ->
-        checkerFrameworkLines.add(line)
-        println(line)
+    final String command = "mvn -e --no-transfer-progress clean compile" +
+        " -P${profile},no-validations"
+    final ProcessBuilder processBuilder = new ProcessBuilder(getOsSpecificCmd(command).split(' '))
+    processBuilder.redirectErrorStream(true)
+    final Process process = processBuilder.start()
+
+    BufferedReader reader = null
+    try {
+        reader = new BufferedReader(new InputStreamReader(process.inputStream))
+        String lineFromReader = reader.readLine()
+        while (lineFromReader != null) {
+            println(lineFromReader)
+            checkerFrameworkLines.add(lineFromReader)
+            lineFromReader = reader.readLine()
+        }
+        process.waitFor()
+    } finally {
+        reader.close()
     }
-    process.waitFor()
+
     final List<List<String>> checkerFrameworkErrors = new ArrayList<>()
     for (int index = 0; index < checkerFrameworkLines.size(); index++) {
         final String line = checkerFrameworkLines.get(index)
@@ -184,7 +197,7 @@ private static List<CheckerFrameworkError> getErrorFromText(final List<List<Stri
         String lineContent = null
         int lineNumber = 0
         if (matcher.matches()) {
-            fileName = matcher.group(fileNameGroup)
+            fileName = matcher.group(fileNameGroup).replace('\\', '/')
             lineNumber = Integer.parseInt(matcher.group(lineNumberGroup))
             specifier = XmlUtil.escapeXml(matcher.group(specifierGroup).trim())
             message = XmlUtil.escapeXml(matcher.group(messageGroup).trim())

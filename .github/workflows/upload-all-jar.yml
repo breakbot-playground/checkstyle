@@ -10,14 +10,29 @@ on:
       version:
         description: 'Target Version without (-SNAPSHOT)'
         required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   github:
-    name: Upload '-all' jar to Github for ${{ github.event.inputs.version }}
+    name: Upload '-all' jar to Github for ${{ inputs.version }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the latest code
         uses: actions/checkout@v3
+      - name: Setup local maven cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: checkstyle-maven-cache-${{ hashFiles('**/pom.xml') }}
 
       - name: Run GitHub Update Script
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          ./.ci/upload-all-jar.sh ${{ github.event.inputs.version }}
+          ./.ci/upload-all-jar.sh ${{ inputs.version }}

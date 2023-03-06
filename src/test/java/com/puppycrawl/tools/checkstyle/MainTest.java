@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code and other text files for adherence to a set of rules.
-// Copyright (C) 2001-2022 the original author or authors.
+// Copyright (C) 2001-2023 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -58,8 +58,8 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import com.puppycrawl.tools.checkstyle.AbstractAutomaticBean.OutputStreamOptions;
 import com.puppycrawl.tools.checkstyle.api.AuditListener;
-import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.Violation;
 import com.puppycrawl.tools.checkstyle.internal.testmodules.TestRootModuleChecker;
@@ -213,6 +213,7 @@ public class MainTest {
      * <p>Configures the environment for each test.</p>
      * <ul>
      * <li>Restore original logging level and HANDLERS to prevent bleeding into other tests;</li>
+     * <li>Turn off colors for picocli to not conflict with tests if they are auto turned on.</li>
      * <li>Start output capture for {@link System#err} and {@link System#out}</li>
      * </ul>
      *
@@ -223,6 +224,8 @@ public class MainTest {
     public void setUp(@SysErr Capturable systemErr, @SysOut Capturable systemOut) {
         systemErr.captureMuted();
         systemOut.captureMuted();
+
+        System.setProperty("picocli.ansi", "false");
 
         LOG.setLevel(ORIGINAL_LOG_LEVEL);
 
@@ -378,8 +381,8 @@ public class MainTest {
         final String cause = "com.puppycrawl.tools.checkstyle.api.CheckstyleException:"
                 + " cannot initialize module TreeWalker - ";
         assertWithMessage("Unexpected system error log")
-                .that(systemErr.getCapturedData().startsWith(cause))
-                .isTrue();
+                .that(systemErr.getCapturedData())
+                .startsWith(cause);
     }
 
     @Test
@@ -456,11 +459,11 @@ public class MainTest {
     @Test
     public void testGetOutputStreamOptionsMethod() throws Exception {
         final Path path = new File(getPath("InputMain.java")).toPath();
-        final AutomaticBean.OutputStreamOptions option =
+        final OutputStreamOptions option =
                 TestUtil.invokeStaticMethod(Main.class, "getOutputStreamOptions", path);
         assertWithMessage("Main.getOutputStreamOptions return CLOSE on not null Path")
                 .that(option)
-                .isEqualTo(AutomaticBean.OutputStreamOptions.CLOSE);
+                .isEqualTo(OutputStreamOptions.CLOSE);
     }
 
     @Test
@@ -728,8 +731,8 @@ public class MainTest {
         final String errorOutput = "com.puppycrawl.tools.checkstyle.api."
             + "CheckstyleException: unable to parse configuration stream - ";
         assertWithMessage("Unexpected system error log")
-                .that(systemErr.getCapturedData().startsWith(errorOutput))
-                .isTrue();
+                .that(systemErr.getCapturedData())
+                .startsWith(errorOutput);
     }
 
     @Test
@@ -740,8 +743,8 @@ public class MainTest {
                 + "CheckstyleException: cannot initialize module RegexpSingleline"
                 + " - RegexpSingleline is not allowed as a child in RegexpSingleline";
         assertWithMessage("Unexpected system error log")
-                .that(systemErr.getCapturedData().startsWith(errorOutput))
-                .isTrue();
+                .that(systemErr.getCapturedData())
+                .startsWith(errorOutput);
     }
 
     @Test
@@ -753,8 +756,8 @@ public class MainTest {
                 + "cannot initialize module JavadocMethod - "
                 + "JavadocVariable is not allowed as a child in JavadocMethod";
         assertWithMessage("Unexpected system error log")
-                .that(systemErr.getCapturedData().startsWith(errorOutput))
-                .isTrue();
+                .that(systemErr.getCapturedData())
+                .startsWith(errorOutput);
     }
 
     @Test
@@ -792,8 +795,8 @@ public class MainTest {
                     .that(samePrefix || sameSuffix)
                     .isTrue();
             assertWithMessage("Invalid violation")
-                    .that(causeMessage.contains(".'"))
-                    .isTrue();
+                    .that(causeMessage)
+                    .contains(".'");
         }
     }
 
@@ -914,8 +917,8 @@ public class MainTest {
                 + "CheckstyleException: Exception was thrown while processing "
                 + new File(getNonCompilablePath("InputMainIncorrectClass.java")).getPath());
         assertWithMessage("Unexpected system error log")
-                .that(systemErr.getCapturedData().contains(exceptionMessage))
-                .isTrue();
+                .that(systemErr.getCapturedData())
+                .contains(exceptionMessage);
     }
 
     @Test
@@ -1751,10 +1754,9 @@ public class MainTest {
                         + "TestRootModuleCheckerCheck");
         assertWithMessage(
                 "Unexpected system error log")
-                        .that(systemErr.getCapturedData()
-                                .startsWith(checkstylePackage + "api.CheckstyleException: "
-                                        + unableToInstantiateExceptionMessage.getMessage()))
-                        .isTrue();
+                        .that(systemErr.getCapturedData())
+                        .startsWith(checkstylePackage + "api.CheckstyleException: "
+                                + unableToInstantiateExceptionMessage.getMessage());
         assertWithMessage("Invalid checker state")
                 .that(TestRootModuleChecker.isProcessed())
                 .isFalse();
@@ -1768,8 +1770,8 @@ public class MainTest {
         final String cause = "com.puppycrawl.tools.checkstyle.api.CheckstyleException:"
                 + " cannot initialize module TreeWalker - ";
         assertWithMessage("Unexpected system error log")
-                .that(systemErr.getCapturedData().startsWith(cause))
-                .isTrue();
+                .that(systemErr.getCapturedData())
+                .startsWith(cause);
     }
 
     @Test
@@ -1781,11 +1783,11 @@ public class MainTest {
                 + " cannot initialize module TreeWalker - ";
         final String causeDetail = "it is not a boolean";
         assertWithMessage("Unexpected system error log")
-                .that(systemErr.getCapturedData().startsWith(cause))
-                .isTrue();
+                .that(systemErr.getCapturedData())
+                .startsWith(cause);
         assertWithMessage("Unexpected system error log")
-                .that(systemErr.getCapturedData().contains(causeDetail))
-                .isTrue();
+                .that(systemErr.getCapturedData())
+                .contains(causeDetail);
     }
 
     @Test
@@ -1824,30 +1826,30 @@ public class MainTest {
     public void testXmlOutputFormatCreateListener() throws IOException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final AuditListener listener = Main.OutputFormat.XML.createListener(out,
-                AutomaticBean.OutputStreamOptions.CLOSE);
+                OutputStreamOptions.CLOSE);
         assertWithMessage("listener is XMLLogger")
-                .that(listener instanceof XMLLogger)
-                .isTrue();
+                .that(listener)
+                .isInstanceOf(XMLLogger.class);
     }
 
     @Test
     public void testSarifOutputFormatCreateListener() throws IOException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final AuditListener listener = Main.OutputFormat.SARIF.createListener(out,
-                AutomaticBean.OutputStreamOptions.CLOSE);
+                OutputStreamOptions.CLOSE);
         assertWithMessage("listener is SarifLogger")
-                .that(listener instanceof SarifLogger)
-                .isTrue();
+                .that(listener)
+                .isInstanceOf(SarifLogger.class);
     }
 
     @Test
     public void testPlainOutputFormatCreateListener() throws IOException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final AuditListener listener = Main.OutputFormat.PLAIN.createListener(out,
-                AutomaticBean.OutputStreamOptions.CLOSE);
+                OutputStreamOptions.CLOSE);
         assertWithMessage("listener is DefaultLogger")
-                .that(listener instanceof DefaultLogger)
-                .isTrue();
+                .that(listener)
+                .isInstanceOf(DefaultLogger.class);
     }
 
     /**
@@ -1860,7 +1862,8 @@ public class MainTest {
      * @noinspection CallToSystemExit, ResultOfMethodCallIgnored
      * @noinspectionreason CallToSystemExit - test helper method requires workaround to
      *      verify exit code
-     * @noinspectionreason ResultOfMethodCallIgnored - temporary suppression until #11589
+     * @noinspectionreason ResultOfMethodCallIgnored - Setup for mockito to only
+     *                     mock getRuntime to avoid VM termination.
      */
     private static void assertMainReturnCode(int expectedExitCode, String... arguments) {
         final Runtime mock = mock(Runtime.class);

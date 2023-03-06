@@ -11,16 +11,16 @@ or set of validation rules (best practices).
 [![][snyk img]][snyk]
 [![][semaphoreci img]][semaphoreci]
 [![][azure img]][azure]
-[![][drone img]][drone]
 [![][error prone img]][error prone]
 [![][pitest img]][pitest]
 [![][checker framework img]][checker framework]
 
-[![][codeship img]][codeship]
 [![][dependabot img]][dependabot]
 
 [![][mavenbadge img]][mavenbadge]
 [![][sonar img]][sonar]
+
+[![][release notes/version img]][release notes/version]
 
 [![][closed issues img]][closed issues]
 [![][link check img]][link check]
@@ -138,9 +138,6 @@ are in the file named "LICENSE.apache20" in this directory.
 [teamcity]:https://teamcity.jetbrains.com/viewType.html?buildTypeId=Checkstyle_IdeaInspectionsMaster
 [teamcity img]:https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:Checkstyle_IdeaInspectionsMaster)/statusIcon
 
-[codeship]: https://codeship.com/projects/124310
-[codeship img]:https://codeship.com/projects/67b814a0-8fee-0133-9b59-02a170289b8c/status?branch=master
-
 [circleci]: https://circleci.com/gh/checkstyle/checkstyle/tree/master
 [circleci img]: https://circleci.com/gh/checkstyle/checkstyle/tree/master.svg?style=svg
 
@@ -177,14 +174,14 @@ are in the file named "LICENSE.apache20" in this directory.
 [dependabot]:https://dependabot.com
 [dependabot img]:https://api.dependabot.com/badges/status?host=github&repo=checkstyle/checkstyle
 
-[drone]:https://cloud.drone.io/checkstyle/checkstyle
-[drone img]:https://cloud.drone.io/api/badges/checkstyle/checkstyle/status.svg
+[closed issues]:https://github.com/checkstyle/checkstyle/actions/workflows/no-old-refs.yml
+[closed issues img]:https://github.com/checkstyle/checkstyle/actions/workflows/no-old-refs.yml/badge.svg
 
-[closed issues]:https://github.com/checkstyle/checkstyle/actions/workflows/no_old_refs.yml
-[closed issues img]:https://github.com/checkstyle/checkstyle/actions/workflows/no_old_refs.yml/badge.svg
+[release notes/version]:https://github.com/checkstyle/checkstyle/actions/workflows/releasenotes-gen.yml
+[release notes/version img]:https://github.com/checkstyle/checkstyle/actions/workflows/releasenotes-gen.yml/badge.svg
 
-[link check]:https://github.com/checkstyle/checkstyle/actions/workflows/run_link_check.yml
-[link check img]:https://github.com/checkstyle/checkstyle/actions/workflows/run_link_check.yml/badge.svg
+[link check]:https://github.com/checkstyle/checkstyle/actions/workflows/run-link-check.yml
+[link check img]:https://github.com/checkstyle/checkstyle/actions/workflows/run-link-check.yml/badge.svg
 
 [error prone]:https://github.com/checkstyle/checkstyle/actions/workflows/error-prone.yml
 [error prone img]:https://github.com/checkstyle/checkstyle/actions/workflows/error-prone.yml/badge.svg
